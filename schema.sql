@@ -1,0 +1,45 @@
+CREATE DATABASE IF NOT EXISTS king_david_school CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE king_david_school;
+
+CREATE TABLE IF NOT EXISTS admin_users (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(60) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS pupils (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  legacy_pupil_number INT NULL UNIQUE,
+  first_name VARCHAR(100) NOT NULL,
+  surname VARCHAR(100) NOT NULL,
+  grade VARCHAR(30) NULL,
+  sex VARCHAR(20) NULL,
+  address VARCHAR(255) NULL,
+  house_number VARCHAR(80) NULL,
+  whatsapp_number VARCHAR(40) NULL,
+  mother_details VARCHAR(160) NULL,
+  mother_nrc VARCHAR(60) NULL,
+  father_details VARCHAR(160) NULL,
+  father_nrc VARCHAR(60) NULL,
+  g7_exam_number VARCHAR(60) NULL,
+  fees_balance_legacy DECIMAL(10,2) NULL,
+  fees_paid_legacy VARCHAR(255) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_pupil_name (surname, first_name),
+  INDEX idx_grade (grade)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS fee_payments (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  pupil_id BIGINT UNSIGNED NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  payment_date DATE NOT NULL,
+  receipt_number VARCHAR(80) NULL,
+  notes VARCHAR(255) NULL,
+  recorded_by BIGINT UNSIGNED NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payment_pupil FOREIGN KEY (pupil_id) REFERENCES pupils(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_payment_admin FOREIGN KEY (recorded_by) REFERENCES admin_users(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
